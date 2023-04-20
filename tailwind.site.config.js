@@ -1,4 +1,4 @@
-/** @type {import('tailwindcss').Config} */
+const plugin = require('tailwindcss/plugin')
 
 const themes = {
   base: {
@@ -66,5 +66,11 @@ module.exports = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    plugin(function({ addBase}) {
+      addBase({
+        'body': { textTransform: 'uppercase' },
+      })
+    })
+  ]
 }
