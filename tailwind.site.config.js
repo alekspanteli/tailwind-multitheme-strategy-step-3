@@ -9,6 +9,9 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        // base: themes.base,
+        // rainforest: themes.rainforest,
+        // candy: themes.candy,
         primary: {
           50: "rgb(var(--primary-50) / <alpha-value>)",
           100: "rgb(var(--primary-100) / <alpha-value>)",
