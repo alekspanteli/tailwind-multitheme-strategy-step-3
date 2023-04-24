@@ -13,6 +13,11 @@ function getRgbChannels(hex) {
   // getRgbChannels('#0099aa') => 0 153 170
 }
 
+function getCssVariableDeclarations(input, output = {}) {
+  // TODO
+  return output
+}
+
 module.exports = plugin(function ({ addBase }) {
   addBase({
     ":root": {
