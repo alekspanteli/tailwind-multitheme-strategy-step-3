@@ -13,44 +13,29 @@ function getRgbChannels(hex) {
   // getRgbChannels('#0099aa') => 0 153 170
 }
 
-function getCssVariableDeclarations(input, output = {}) {
-  // TODO
+function getCssVariableDeclarations(input, path = [], output = {}) {
+  Object.entries(input).forEach(([key, value]) => {
+    const newPath = path.concat(key)
+    if (typeof value !== "string") {
+      getCssVariableDeclarations(value, newPath, output)
+    }
+    else{
+       output[`--${newPath.join('-')}`] = getRgbChannels(value)
+    }
+  });
+
   return output;
 }
 
 module.exports = plugin(
   function ({ addBase }) {
-    console.log('CSS vars', getCssVariableDeclarations(themes.base))
-    
     addBase({
-      ":root": {
-        "--primary-50": getRgbChannels(themes.base.primary["50"]),
-        "--primary-100": getRgbChannels(themes.base.primary["100"]),
-        "--primary-200": getRgbChannels(themes.base.primary["200"]),
-        "--primary-300": getRgbChannels(themes.base.primary["300"]),
-        "--primary-400": getRgbChannels(themes.base.primary["400"]),
-        "--primary-500": getRgbChannels(themes.base.primary["500"]),
-        "--primary-600": getRgbChannels(themes.base.primary["600"]),
-        "--primary-700": getRgbChannels(themes.base.primary["700"]),
-        "--primary-800": getRgbChannels(themes.base.primary["800"]),
-        "--primary-900": getRgbChannels(themes.base.primary["900"]),
-      },
-    });
+      ':root': getCssVariableDeclarations(Object.values(themes)[0]),
+    })
 
     Object.entries(themes).forEach(([key, value]) => {
       addBase({
-        [`[data-theme="${key}"]`]: {
-          "--primary-50": getRgbChannels(value.primary["50"]),
-          "--primary-100": getRgbChannels(value.primary["100"]),
-          "--primary-200": getRgbChannels(value.primary["200"]),
-          "--primary-300": getRgbChannels(value.primary["300"]),
-          "--primary-400": getRgbChannels(value.primary["400"]),
-          "--primary-500": getRgbChannels(value.primary["500"]),
-          "--primary-600": getRgbChannels(value.primary["600"]),
-          "--primary-700": getRgbChannels(value.primary["700"]),
-          "--primary-800": getRgbChannels(value.primary["800"]),
-          "--primary-900": getRgbChannels(value.primary["900"]),
-        },
+        [`[data-theme="${key}"]`]: getCssVariableDeclarations(value),
       });
     });
   },
