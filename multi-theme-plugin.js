@@ -1,8 +1,6 @@
 const plugin = require("tailwindcss/plugin");
 const hexRgb = require("hex-rgb");
 
-const themes = require("./themes.json");
-
 // ------------------------------
 // Helpers
 // ------------------------------
@@ -43,24 +41,41 @@ function getColorUtilitiesWithCssVariableReferences(input, path = []) {
   );
 }
 
-module.exports = plugin(
-  function ({ addBase }) {
-    console.log(getColorUtilitiesWithCssVariableReferences(themes.base));
-    addBase({
-      ":root": getCssVariableDeclarations(Object.values(themes)[0]),
-    });
-
-    Object.entries(themes).forEach(([key, value]) => {
-      addBase({
-        [`[data-theme="${key}"]`]: getCssVariableDeclarations(value),
-      });
-    });
-  },
-  {
-    theme: {
-      extend: {
-        colors: getColorUtilitiesWithCssVariableReferences(Object.values(themes)[0])
-      },
-    },
+// Check for valid color themes input
+function checkForValidColorThemesInput(input) {
+  const isValid =
+    typeof input === 'object' && Object.keys(input).some((key) => typeof input[key] === 'object')
+  if (!isValid) {
+    throw new Error(
+      'The Multi-Theme Plugin expects a `colorThemes` option passed to it, which contains at least one theme object.'
+    )
   }
-);
+}
+
+module.exports = plugin.withOptions(
+  function (options) {
+    const { colorThemes } = options
+    checkForValidColorThemesInput(colorThemes)
+    return function ({ addBase }) {
+      addBase({
+        ':root': getCssVariableDeclarations(Object.values(colorThemes)[0]),
+      })
+      Object.entries(colorThemes).forEach(([key, value]) => {
+        addBase({
+          [`[data-theme="${key}"]`]: getCssVariableDeclarations(value),
+        })
+      })
+    }
+  },
+  function (options) {
+    const { colorThemes } = options
+    checkForValidColorThemesInput(colorThemes)
+    return {
+      theme: {
+        extend: {
+          colors: getColorUtilitiesWithCssVariableReferences(Object.values(colorThemes)[0]),
+        },
+      },
+    }
+  }
+)

@@ -1,4 +1,5 @@
 const multiThemePlugin = require("./multi-theme-plugin.js");
+const themes = require("./themes.json");
 
 module.exports = {
   content: [
@@ -6,5 +7,7 @@ module.exports = {
     "./components/**/*.{js,ts,jsx,tsx}",
     "./app/**/*.{js,ts,jsx,tsx}",
   ],
-  plugins: [multiThemePlugin],
+  plugins: [multiThemePlugin({
+    colorThemes: themes,
+  })],
 };
